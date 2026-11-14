@@ -44,6 +44,11 @@ class RegistrationTests(TestCase):
         response = self.post(display_name='')
         self.assertContains(response, 'This field is required')
 
+    def test_invalid_field_gets_bootstrap_error_style(self):
+        response = self.post(display_name='')
+        self.assertContains(response, 'class="form-control is-invalid"')
+        self.assertContains(response, 'invalid-feedback')
+
 
 class LoginAndRoleTests(TestCase):
     def setUp(self):
@@ -69,6 +74,12 @@ class LoginAndRoleTests(TestCase):
                 response = self.client.get(reverse('accounts:dashboard'))
                 self.assertRedirects(response, reverse(dashboard))
                 self.client.logout()
+
+    def test_platform_dashboard_shows_counts_per_type(self):
+        self.client.force_login(self.platform_admin)
+        response = self.client.get(reverse('accounts:platform_dashboard'))
+        for label in ('School staff accounts', 'Divisions', 'root@bulig.ph'):
+            self.assertContains(response, label)
 
     def test_invalid_credentials_show_error(self):
         response = self.client.post(reverse('accounts:login'), {'username': 'staff@school.ph', 'password': 'wrong'})

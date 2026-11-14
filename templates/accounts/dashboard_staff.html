@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Staff dashboard{% endblock %}
-{% block role_nav %}<a href="{% url 'accounts:staff_dashboard' %}">My cases</a>{% endblock %}
 {% block content %}
 <h1>Hello, {{ user.display_name }}</h1>
-<p class="muted">School staff dashboard</p>
+<p class="lede">Your cases and notifications live here once you belong to a school.</p>
 
-<div class="card">
-  <h2>School membership</h2>
-  <p>You are not assigned to a school yet. A school head or platform administrator must add you to a school before you can receive student reports.</p>
-</div>
+<section class="next-step" aria-labelledby="next-step-title">
+  <h2 id="next-step-title">You're not in a school yet</h2>
+  <p>A school head or platform administrator adds you to a school. After that, student reports for your school start showing up below.</p>
+  <p>They'll look you up by email, so make sure <a href="{% url 'accounts:profile' %}">your profile</a> has the right one.</p>
+</section>
 
-<div class="grid">
-  <div class="card"><div class="muted">Assigned cases</div><div class="stat">0</div></div>
-  <div class="card"><div class="muted">Awaiting acknowledgement</div><div class="stat">0</div></div>
-  <div class="card"><div class="muted">Unread notifications</div><div class="stat">0</div></div>
-</div>
+<section aria-label="Your case counts" class="tally">
+  {% include 'accounts/_stat.html' with label='Assigned cases' value=0 %}
+  {% include 'accounts/_stat.html' with label='Waiting for your acknowledgement' value=0 %}
+  {% include 'accounts/_stat.html' with label='Unread notifications' value=0 %}
+</section>
 {% endblock %}

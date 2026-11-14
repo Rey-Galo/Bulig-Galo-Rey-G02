@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="auth">
+  <aside class="auth-board">
+    <a class="wordmark" href="{% url 'home' %}">Bulig</a>
+    <div class="board-copy">
+      <p class="board-headline">Reports reach adults who can help.</p>
+      <p>Bulig is the case desk for guidance offices in Philippine schools. Students report without an account; staff follow each case to its close.</p>
+      <ul class="board-facts">
+        <li>Students report anonymously. They never need to sign up.</li>
+        <li>Teachers and guidance staff handle cases for their own school.</li>
+        <li>Division offices see counts only, never what a student wrote.</li>
+      </ul>
+    </div>
+    <p class="board-foot">Bulig is Cebuano for "help".</p>
+  </aside>
+  <main class="auth-form">
+    <div class="auth-form-inner">
+      {% include 'partials/messages.html' %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+{% endblock %}

@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
     'accounts',
 ]
+
+# Let forms find templates/forms/bootstrap.html in the project templates folder.
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 AUTH_USER_MODEL = 'accounts.StaffAccount'
 
@@ -132,6 +136,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 
 # Email

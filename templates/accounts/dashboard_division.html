@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Division dashboard{% endblock %}
-{% block role_nav %}<a href="{% url 'accounts:division_dashboard' %}">Response overview</a>{% endblock %}
 {% block content %}
 <h1>{{ division.name }}</h1>
-<p class="muted">Division administrator dashboard · {{ division.division_code }}</p>
+<p class="lede">Division code {{ division.division_code }}. You see how schools respond to reports. You never see report contents or case details.</p>
 
-<div class="card">
-  <h2>School response overview</h2>
-  <p class="muted">School-level counts only. Report contents and case details are never shown to division accounts.</p>
-  <div class="grid">
-    <div><div class="muted">Unreviewed</div><div class="stat">0</div></div>
-    <div><div class="muted">Overdue</div><div class="stat">0</div></div>
-    <div><div class="muted">Escalated</div><div class="stat">0</div></div>
-    <div><div class="muted">Closed</div><div class="stat">0</div></div>
-  </div>
-</div>
+<section aria-label="Division totals" class="tally">
+  {% include 'accounts/_stat.html' with label='Unreviewed' value=0 %}
+  {% include 'accounts/_stat.html' with label='Overdue' value=0 %}
+  {% include 'accounts/_stat.html' with label='Escalated' value=0 %}
+  {% include 'accounts/_stat.html' with label='Closed' value=0 %}
+</section>
+
+<section class="panel" aria-labelledby="schools-title">
+  <h2 id="schools-title">How each school is responding</h2>
+  <p class="empty-note">No schools in this division yet. Once a platform administrator links a school to {{ division.name }}, it shows up here with its unreviewed, overdue, escalated and closed counts.</p>
+</section>
 {% endblock %}

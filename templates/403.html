@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Access denied{% endblock %}
 {% block content %}
-<div class="narrow card">
+<div class="denied">
   <h1>Access denied</h1>
-  <p class="muted">You don't have permission to open this page. Each account can only open the dashboard for its own role.</p>
-  <a class="btn" href="{% url 'accounts:dashboard' %}">Go to my dashboard</a>
+  <p class="lede">This page belongs to a different role. Each account only opens the dashboard for its own role, so student information stays with the people handling it.</p>
+  <a class="btn btn-primary" href="{% url 'accounts:dashboard' %}">Go to my dashboard</a>
 </div>
 {% endblock %}

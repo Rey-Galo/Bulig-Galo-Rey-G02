@@ -1,32 +1,39 @@
 {% extends 'base.html' %}
 {% block title %}Platform dashboard{% endblock %}
-{% block role_nav %}<a href="{% url 'admin:index' %}">Manage accounts</a>{% endblock %}
 {% block content %}
 <h1>Platform administration</h1>
-<p class="muted">Provision divisions and adult accounts. Platform admins have no routine access to report contents.</p>
+<p class="lede">Set up divisions and adult accounts. Platform admins have no routine access to report contents.</p>
 
-<div class="grid">
+<section aria-label="Account totals" class="tally">
   {% for label, count in account_counts %}
-    <div class="card"><div class="muted">{{ label }} accounts</div><div class="stat">{{ count }}</div></div>
+    {% include 'accounts/_stat.html' with label=label|add:' accounts' value=count %}
   {% endfor %}
-  <div class="card"><div class="muted">Divisions</div><div class="stat">{{ division_count }}</div></div>
-</div>
+  {% include 'accounts/_stat.html' with label='Divisions' value=division_count %}
+</section>
 
-<div class="card">
-  <h2>Newest accounts</h2>
-  <table>
-    <thead><tr><th>Name</th><th>Email</th><th>Type</th></tr></thead>
-    <tbody>
-      {% for account in recent_accounts %}
-        <tr><td>{{ account.display_name }}</td><td>{{ account.email }}</td><td>{{ account.get_account_type_display }}</td></tr>
-      {% empty %}
-        <tr><td colspan="3" class="muted">No accounts yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <p style="margin-top:16px">
-    <a class="btn" href="{% url 'admin:accounts_staffaccount_add' %}">Add account</a>
-    <a class="btn secondary" href="{% url 'admin:accounts_division_add' %}">Add division</a>
-  </p>
-</div>
+<section class="panel" aria-labelledby="newest-title">
+  <div class="panel-head">
+    <h2 id="newest-title">Newest accounts</h2>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-primary btn-sm" href="{% url 'admin:accounts_staffaccount_add' %}">Add account</a>
+      <a class="btn btn-quiet btn-sm" href="{% url 'admin:accounts_division_add' %}">Add division</a>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Type</th></tr></thead>
+      <tbody>
+        {% for account in recent_accounts %}
+          <tr>
+            <td>{{ account.display_name }}</td>
+            <td>{{ account.email }}</td>
+            <td><span class="role-tag {{ account.account_type }}">{{ account.get_account_type_display }}</span></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-body-secondary py-4">No accounts yet. Use "Add account" to create the first one.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

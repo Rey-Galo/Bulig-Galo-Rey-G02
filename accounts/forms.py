@@ -1,7 +1,28 @@
 from django import forms
-from django.contrib.auth.forms import BaseUserCreationForm, UserChangeForm
+from django.contrib.auth.forms import AuthenticationForm, BaseUserCreationForm, UserChangeForm
 
 from .models import StaffAccount
+
+
+class BootstrapMixin:
+    """Render with templates/forms/bootstrap.html; invalid inputs get Bootstrap's red border."""
+
+    template_name = 'forms/bootstrap.html'
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
+    def full_clean(self) -> None:
+        super().full_clean()
+        for name in self.errors:
+            if name in self.fields:
+                self.fields[name].widget.attrs['class'] += ' is-invalid'
+
+
+class LoginForm(BootstrapMixin, AuthenticationForm):
+    pass
 
 
 class EmailUniqueMixin:
@@ -17,7 +38,7 @@ class EmailUniqueMixin:
         return email
 
 
-class RegistrationForm(EmailUniqueMixin, BaseUserCreationForm):
+class RegistrationForm(BootstrapMixin, EmailUniqueMixin, BaseUserCreationForm):
     """Public sign-up. Always creates a plain STAFF account; the role is not user-selectable."""
 
     class Meta:
@@ -26,7 +47,7 @@ class RegistrationForm(EmailUniqueMixin, BaseUserCreationForm):
         labels = {'display_name': 'Full name'}
 
 
-class ProfileForm(EmailUniqueMixin, forms.ModelForm):
+class ProfileForm(BootstrapMixin, EmailUniqueMixin, forms.ModelForm):
     class Meta:
         model = StaffAccount
         fields = ('display_name', 'email')

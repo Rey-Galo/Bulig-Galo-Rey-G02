@@ -1,14 +1,12 @@
-{% extends 'base.html' %}
-{% block title %}Register{% endblock %}
+{% extends 'auth_base.html' %}
+{% block title %}Create a staff account{% endblock %}
 {% block content %}
-<div class="narrow card">
-  <h1>Create a staff account</h1>
-  <p class="muted">For teachers, guidance personnel, and school heads. Students do not need an account to submit a report.</p>
-  <form method="post" novalidate>
-    {% csrf_token %}
-    {{ form.as_div }}
-    <button class="btn" type="submit">Register</button>
-  </form>
-  <p class="muted">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
-</div>
+<h1>Create a staff account</h1>
+<p class="lede">For teachers, guidance personnel and school heads. Students don't need an account to send a report.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form }}
+  <button class="btn btn-primary w-100" type="submit" data-busy-label="Creating account…">Create account</button>
+</form>
+<p class="auth-switch">Already registered? <a href="{% url 'accounts:login' %}">Log in</a></p>
 {% endblock %}
