@@ -78,7 +78,9 @@ class LoginAndRoleTests(TestCase):
         self.client.force_login(self.staff)
         for name in ('accounts:division_dashboard', 'accounts:platform_dashboard'):
             with self.subTest(name=name):
-                self.assertEqual(self.client.get(reverse(name)).status_code, 403)
+                response = self.client.get(reverse(name))
+                self.assertEqual(response.status_code, 403)
+                self.assertContains(response, 'Access denied', status_code=403)
 
     def test_anonymous_user_redirected_to_login(self):
         for name in ('accounts:staff_dashboard', 'accounts:platform_dashboard', 'accounts:profile'):
