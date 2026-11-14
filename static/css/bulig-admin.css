@@ -1,0 +1,179 @@
+/* Bulig skin for the Django admin. Only swaps admin's own CSS variables and a few type rules;
+   layout and behaviour stay Django's. Loaded after admin's base.css and dark_mode.css. */
+
+:root,
+html[data-theme="light"] {
+  --primary: #2b5244;
+  --secondary: #1f3d33;
+  --accent: #e2b650;
+  --primary-fg: #ffffff;
+
+  --body-fg: #17211c;
+  --body-bg: #ffffff;
+  --body-quiet-color: #4a5a52;
+  --body-medium-color: #2f3d36;
+  --body-loud-color: #0d1511;
+
+  --header-color: #bcd0c5;
+  --header-branding-color: #eef3ef;
+  --header-bg: #1f3d33;
+  --header-link-color: #eef3ef;
+
+  --breadcrumbs-fg: #bcd0c5;
+  --breadcrumbs-link-fg: #ffffff;
+  --breadcrumbs-bg: #2b5244;
+
+  --link-fg: #1f3d33;
+  --link-hover-color: #2b5244;
+  --link-selected-fg: #1f3d33;
+
+  --hairline-color: #e6ece8;
+  --border-color: #b5c1ba;
+  --error-fg: #a3261f;
+
+  --message-debug-bg: #e6ece8;
+  --message-info-bg: #e6ece8;
+  --message-success-bg: #dff0e5;
+  --message-warning-bg: #fbf1d6;
+  --message-error-bg: #f8e3e1;
+
+  --darkened-bg: #f3f5f2;
+  --selected-bg: #e6ece8;
+  --selected-row: #fbf1d6;
+
+  --button-fg: #ffffff;
+  --button-bg: #1f3d33;
+  --button-hover-bg: #2b5244;
+  --default-button-bg: #1f3d33;
+  --default-button-hover-bg: #2b5244;
+  --close-button-bg: #4a5a52;
+  --close-button-hover-bg: #17211c;
+  --delete-button-bg: #a3261f;
+  --delete-button-hover-bg: #861e18;
+
+  --font-family-primary: "Source Sans 3", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Dark: same chalkboard family, deeper. Applies to the OS setting (theme "auto") and the toggle. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #2b5244;
+    --primary-fg: #eef3ef;
+    --body-fg: #e3ebe6;
+    --body-bg: #121a16;
+    --body-quiet-color: #a9bab1;
+    --body-medium-color: #cbd8d0;
+    --body-loud-color: #ffffff;
+    --header-bg: #1f3d33;
+    --breadcrumbs-link-fg: #ffffff;
+    --breadcrumbs-bg: #17302a;
+    --link-fg: #9fd0b8;
+    --link-hover-color: #c4e6d5;
+    --link-selected-fg: #e2b650;
+    --hairline-color: #24302a;
+    --border-color: #3c4b43;
+    --error-fg: #ef8a82;
+    --message-debug-bg: #24302a;
+    --message-info-bg: #1f3d33;
+    --message-success-bg: #1d4a32;
+    --message-warning-bg: #4f421c;
+    --message-error-bg: #5a2420;
+    --darkened-bg: #19231e;
+    --selected-bg: #24302a;
+    --selected-row: #3a3320;
+    --close-button-bg: #3c4b43;
+    --close-button-hover-bg: #56685e;
+  }
+}
+html[data-theme="dark"] {
+  --primary: #2b5244;
+  --primary-fg: #eef3ef;
+  --body-fg: #e3ebe6;
+  --body-bg: #121a16;
+  --body-quiet-color: #a9bab1;
+  --body-medium-color: #cbd8d0;
+  --body-loud-color: #ffffff;
+  --header-bg: #1f3d33;
+  --breadcrumbs-link-fg: #ffffff;
+  --breadcrumbs-bg: #17302a;
+  --link-fg: #9fd0b8;
+  --link-hover-color: #c4e6d5;
+  --link-selected-fg: #e2b650;
+  --hairline-color: #24302a;
+  --border-color: #3c4b43;
+  --error-fg: #ef8a82;
+  --message-debug-bg: #24302a;
+  --message-info-bg: #1f3d33;
+  --message-success-bg: #1d4a32;
+  --message-warning-bg: #4f421c;
+  --message-error-bg: #5a2420;
+  --darkened-bg: #19231e;
+  --selected-bg: #24302a;
+  --selected-row: #3a3320;
+  --close-button-bg: #3c4b43;
+  --close-button-hover-bg: #56685e;
+}
+
+body { font-size: 0.9375rem; }
+
+/* Headings in Lexend, like the main app. */
+#site-name,
+#content h1,
+#content h2,
+.module h2,
+.module caption {
+  font-family: "Lexend", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+#site-name { font-weight: 600; font-size: 1.35rem; }
+#content h1 { font-weight: 600; font-size: 1.6rem; color: var(--body-loud-color); }
+
+/* Manila stays reserved for the "current" marker; the wordmark is chalk ink like the app's. */
+#site-name a:link,
+#site-name a:visited { color: var(--header-branding-color); }
+
+/* Sentence case instead of tiny letter-spaced capitals. Page CSS (changelists, forms) loads
+   after this file, hence the extra `body` on those selectors. */
+h5,
+.module h2,
+.module caption,
+.inline-group h2,
+thead th,
+.object-tools a:link,
+.object-tools a:visited,
+#user-tools,
+#logout-form button,
+body #changelist-filter h2,
+body .submit-row input.default {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.module h2,
+.module caption { font-size: 0.95rem; font-weight: 600; }
+thead th { font-size: 0.85rem; font-weight: 600; }
+
+/* The current sidebar entry gets the manila marker, same as the app's nav. */
+#nav-sidebar .current-model { box-shadow: inset 3px 0 0 var(--accent); }
+
+/* Buttons and fields: 4px radius everywhere, a visible focus ring. */
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button,
+.object-tools a,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+select,
+textarea { border-radius: 4px; }
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.button:focus-visible,
+input[type="submit"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

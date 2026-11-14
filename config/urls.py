@@ -18,6 +18,10 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
 
+admin.site.site_header = 'Bulig admin'
+admin.site.site_title = 'Bulig admin'
+admin.site.index_title = 'Accounts and divisions'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(pattern_name='accounts:dashboard'), name='home'),
