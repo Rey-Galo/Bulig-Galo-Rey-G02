@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Division dashboard{% endblock %}
+{% block role_nav %}<a href="{% url 'accounts:division_dashboard' %}">Response overview</a>{% endblock %}
+{% block content %}
+<h1>{{ division.name }}</h1>
+<p class="muted">Division administrator dashboard · {{ division.division_code }}</p>
+
+<div class="card">
+  <h2>School response overview</h2>
+  <p class="muted">School-level counts only. Report contents and case details are never shown to division accounts.</p>
+  <div class="grid">
+    <div><div class="muted">Unreviewed</div><div class="stat">0</div></div>
+    <div><div class="muted">Overdue</div><div class="stat">0</div></div>
+    <div><div class="muted">Escalated</div><div class="stat">0</div></div>
+    <div><div class="muted">Closed</div><div class="stat">0</div></div>
+  </div>
+</div>
+{% endblock %}

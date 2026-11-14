@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Platform dashboard{% endblock %}
+{% block role_nav %}<a href="{% url 'admin:index' %}">Manage accounts</a>{% endblock %}
+{% block content %}
+<h1>Platform administration</h1>
+<p class="muted">Provision divisions and adult accounts. Platform admins have no routine access to report contents.</p>
+
+<div class="grid">
+  {% for label, count in account_counts %}
+    <div class="card"><div class="muted">{{ label }} accounts</div><div class="stat">{{ count }}</div></div>
+  {% endfor %}
+  <div class="card"><div class="muted">Divisions</div><div class="stat">{{ division_count }}</div></div>
+</div>
+
+<div class="card">
+  <h2>Newest accounts</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Email</th><th>Type</th></tr></thead>
+    <tbody>
+      {% for account in recent_accounts %}
+        <tr><td>{{ account.display_name }}</td><td>{{ account.email }}</td><td>{{ account.get_account_type_display }}</td></tr>
+      {% empty %}
+        <tr><td colspan="3" class="muted">No accounts yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p style="margin-top:16px">
+    <a class="btn" href="{% url 'admin:accounts_staffaccount_add' %}">Add account</a>
+    <a class="btn secondary" href="{% url 'admin:accounts_division_add' %}">Add division</a>
+  </p>
+</div>
+{% endblock %}

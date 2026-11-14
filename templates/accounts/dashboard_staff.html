@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Staff dashboard{% endblock %}
+{% block role_nav %}<a href="{% url 'accounts:staff_dashboard' %}">My cases</a>{% endblock %}
+{% block content %}
+<h1>Hello, {{ user.display_name }}</h1>
+<p class="muted">School staff dashboard</p>
+
+<div class="card">
+  <h2>School membership</h2>
+  <p>You are not assigned to a school yet. A school head or platform administrator must add you to a school before you can receive student reports.</p>
+</div>
+
+<div class="grid">
+  <div class="card"><div class="muted">Assigned cases</div><div class="stat">0</div></div>
+  <div class="card"><div class="muted">Awaiting acknowledgement</div><div class="stat">0</div></div>
+  <div class="card"><div class="muted">Unread notifications</div><div class="stat">0</div></div>
+</div>
+{% endblock %}
