@@ -20,10 +20,11 @@ from django.views.generic import RedirectView
 
 admin.site.site_header = 'Bulig admin'
 admin.site.site_title = 'Bulig admin'
-admin.site.index_title = 'Accounts and divisions'
+admin.site.index_title = 'Accounts, divisions and schools'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(pattern_name='accounts:dashboard'), name='home'),
     path('', include('accounts.urls')),
+    path('schools/', include('schools.urls')),
 ]

@@ -2,17 +2,25 @@
 {% block title %}Staff dashboard{% endblock %}
 {% block content %}
 <h1>Hello, {{ user.display_name }}</h1>
-<p class="lede">Your cases and notifications live here once you belong to a school.</p>
+<p class="lede">Your schools and the student reports sent to you live here.</p>
 
+{% if not memberships %}
 <section class="next-step" aria-labelledby="next-step-title">
   <h2 id="next-step-title">You're not in a school yet</h2>
-  <p>A school head or platform administrator adds you to a school. After that, student reports for your school start showing up below.</p>
-  <p>They'll look you up by email, so make sure <a href="{% url 'accounts:profile' %}">your profile</a> has the right one.</p>
+  <p>Join the school you work in and turn on "Receive student reports" so students can pick you as their trusted adult.</p>
+  <p><a class="btn btn-primary btn-sm" href="{% url 'schools:membership_join' %}">Join a school</a></p>
 </section>
-
-<section aria-label="Your case counts" class="tally">
-  {% include 'accounts/_stat.html' with label='Assigned cases' value=0 %}
-  {% include 'accounts/_stat.html' with label='Waiting for your acknowledgement' value=0 %}
-  {% include 'accounts/_stat.html' with label='Unread notifications' value=0 %}
+{% else %}
+<section class="panel" aria-labelledby="schools-title">
+  <div class="panel-head">
+    <h2 id="schools-title">Your schools</h2>
+    <a class="btn btn-quiet btn-sm" href="{% url 'schools:membership_list' %}">Manage</a>
+  </div>
+  <ul class="mb-0">
+    {% for m in memberships %}
+      <li>{{ m.school.name }} · {{ m.get_role_display }}{% if m.is_trusted_recipient %} · receives reports{% endif %}</li>
+    {% endfor %}
+  </ul>
 </section>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}My schools{% endblock %}
+{% block content %}
+<h1>My schools</h1>
+<p class="lede">Join the schools you work in. Turn on "Receive student reports" so students can pick you as their trusted adult.</p>
+
+<section class="panel" aria-labelledby="memberships-title">
+  <div class="panel-head">
+    <h2 id="memberships-title">Memberships</h2>
+    <a class="btn btn-primary btn-sm" href="{% url 'schools:membership_join' %}">Join a school</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead><tr><th scope="col">School</th><th scope="col">Role</th><th scope="col">Receives reports</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+      <tbody>
+        {% for m in memberships %}
+          <tr>
+            <td>{{ m.school.name }} <span class="text-body-secondary">({{ m.school.school_code }})</span></td>
+            <td><span class="role-tag {{ m.role }}">{{ m.get_role_display }}</span>{% if not m.is_active %} <span class="role-tag">Inactive</span>{% endif %}</td>
+            <td>{{ m.is_trusted_recipient|yesno:"Yes,No" }}</td>
+            <td class="text-end text-nowrap">
+              <a class="btn btn-quiet btn-sm" href="{% url 'schools:membership_edit' m.pk %}">Edit</a>
+              <a class="btn btn-quiet btn-sm" href="{% url 'schools:membership_leave' m.pk %}">Leave</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="text-body-secondary py-4">You're not in a school yet. Use "Join a school" to add one.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
