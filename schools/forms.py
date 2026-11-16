@@ -27,11 +27,19 @@ class JoinSchoolForm(BootstrapMixin, forms.ModelForm):
 
     def clean_school(self) -> School:
         school = self.cleaned_data['school']
-        if SchoolMembership.objects.filter(school=school, account=self.account).exists():
+        if SchoolMembership.objects.filter(school=school, account=self.account, is_active=True).exists():
             raise forms.ValidationError('You already belong to this school.')
         return school
 
     def save(self, commit: bool = True) -> SchoolMembership:
+        # Rejoining reuses the switched-off membership kept for case history (one per school).
+        old = SchoolMembership.objects.filter(school=self.cleaned_data['school'], account=self.account).first()
+        if old:
+            old.role = self.cleaned_data['role']
+            old.is_trusted_recipient = self.cleaned_data['is_trusted_recipient']
+            old.is_active = True
+            old.save(update_fields=['role', 'is_trusted_recipient', 'is_active'])
+            return old
         self.instance.account = self.account
         return super().save(commit)
 

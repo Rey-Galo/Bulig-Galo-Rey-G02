@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Cases{% endblock %}
+{% block content %}
+<h1>Cases</h1>
+<p class="lede">Reports sent to you, cases you own and, for school heads, every case in your school.</p>
+
+<section class="panel" aria-labelledby="cases-title">
+  <div class="panel-head">
+    <h2 id="cases-title">Case queue</h2>
+    <form method="get" class="d-flex flex-wrap gap-2 align-items-center">
+      <label class="visually-hidden" for="{{ filters.status.id_for_label }}">Status</label>{{ filters.status }}
+      <label class="visually-hidden" for="{{ filters.severity.id_for_label }}">Severity</label>{{ filters.severity }}
+      <button class="btn btn-quiet btn-sm" type="submit">Filter</button>
+    </form>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr><th scope="col">Case</th><th scope="col">School</th><th scope="col">Status</th><th scope="col">Severity</th><th scope="col">Owner</th><th scope="col">Acknowledge by</th></tr>
+      </thead>
+      <tbody>
+        {% for case in cases %}
+          <tr>
+            <td><a href="{% url 'cases:case_detail' case.pk %}">{{ case.case_number }}</a><br><span class="text-body-secondary small">{{ case.opened_at|date:"M j, g:i A" }}</span></td>
+            <td>{{ case.report.school.name }}</td>
+            <td><span class="status-tag {{ case.status }}">{{ case.get_status_display }}</span></td>
+            <td>{% if case.confirmed_severity %}<span class="sev-tag {{ case.confirmed_severity }}">{{ case.get_confirmed_severity_display }}</span>{% else %}<span class="text-body-secondary">Not reviewed</span>{% endif %}</td>
+            <td>{{ case.owner_membership.account.display_name }}</td>
+            <td>
+              {% if case.status == 'OPEN' %}
+                {{ case.ack_due_at|date:"M j, g:i A" }}{% if case.ack_due_at < now %} <span class="status-tag overdue">Overdue</span>{% endif %}
+              {% else %}<span class="text-body-secondary">—</span>{% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" class="text-body-secondary py-4">No cases match. New student reports for you show up here.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

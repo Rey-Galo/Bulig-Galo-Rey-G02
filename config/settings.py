@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.forms',
     'accounts',
     'schools',
+    'cases',
 ]
 
 # Let forms find templates/forms/bootstrap.html in the project templates folder.

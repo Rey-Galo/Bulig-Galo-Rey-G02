@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Report a concern{% endblock %}
+{% block content %}
+<h1>Report a concern</h1>
+<p class="lede">You don't need an account and we won't ask your name. Pick your school first.</p>
+{% include 'cases/_danger_notice.html' %}
+
+<section class="panel" style="max-width: 40rem" aria-labelledby="schools-title">
+  <h2 id="schools-title">Your school</h2>
+  {% if schools %}
+  <ul class="pick-list">
+    {% for school in schools %}
+      <li><a class="btn btn-quiet w-100 text-start" href="{% url 'cases:intake_form' school.pk %}">{{ school.name }}</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty-note">No school is taking reports online yet. Please talk to a teacher or guidance counselor you trust.</p>
+  {% endif %}
+</section>
+{% endblock %}

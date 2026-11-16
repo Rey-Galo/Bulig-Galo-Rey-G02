@@ -10,4 +10,5 @@
   <button class="btn btn-primary w-100" type="submit" data-busy-label="Logging in…">Log in</button>
 </form>
 <p class="auth-switch">New staff member? <a href="{% url 'accounts:register' %}">Create a staff account</a></p>
+<p class="auth-switch">Student? <a href="{% url 'cases:intake_school' %}">Report a concern anonymously</a>. No account needed.</p>
 {% endblock %}

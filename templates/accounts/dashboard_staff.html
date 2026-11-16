@@ -11,6 +11,28 @@
   <p><a class="btn btn-primary btn-sm" href="{% url 'schools:membership_join' %}">Join a school</a></p>
 </section>
 {% else %}
+<section aria-label="Your case counts" class="tally">
+  {% include 'accounts/_stat.html' with label='Waiting for your review' value=counts.to_review %}
+  {% include 'accounts/_stat.html' with label='Waiting for your acknowledgement' value=counts.to_acknowledge %}
+  {% include 'accounts/_stat.html' with label='Cases you are handling' value=counts.working %}
+</section>
+
+<section class="panel" aria-labelledby="recent-title">
+  <div class="panel-head">
+    <h2 id="recent-title">Open cases</h2>
+    <a class="btn btn-primary btn-sm" href="{% url 'cases:case_list' %}">All cases</a>
+  </div>
+  {% if recent_cases %}
+  <ul class="mb-0">
+    {% for case in recent_cases %}
+      <li><a href="{% url 'cases:case_detail' case.pk %}">{{ case.case_number }}</a> · <span class="status-tag {{ case.status }}">{{ case.get_status_display }}</span> · {{ case.report.school.name }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty-note">No open cases. New student reports sent to you show up here.</p>
+  {% endif %}
+</section>
+
 <section class="panel" aria-labelledby="schools-title">
   <div class="panel-head">
     <h2 id="schools-title">Your schools</h2>
@@ -18,7 +40,7 @@
   </div>
   <ul class="mb-0">
     {% for m in memberships %}
-      <li>{{ m.school.name }} · {{ m.get_role_display }}{% if m.is_trusted_recipient %} · receives reports{% endif %}</li>
+      <li>{{ m.school.name }} · {{ m.get_role_display }}{% if m.is_trusted_recipient %} · receives reports{% endif %}{% if not m.is_active %} · inactive{% endif %}</li>
     {% endfor %}
   </ul>
 </section>

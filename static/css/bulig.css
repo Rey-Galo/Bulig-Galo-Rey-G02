@@ -141,6 +141,19 @@ h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: .75rem; }
 .role-tag { display: inline-block; padding: .1rem .5rem; border-radius: var(--radius); background: var(--surface-step); font-size: .9rem; font-weight: 600; white-space: nowrap; }
 .role-tag.PLATFORM_ADMIN { background: var(--chalk); color: var(--chalk-ink); }
 .role-tag.DIVISION_ADMIN { background: #f3e3b8; color: #4d3a0c; }
+.form-select { border-color: var(--field-line); }
+
+/* Cases: tags reuse the role-tag shape; red only where action is late or severity is high. */
+.status-tag, .sev-tag { display: inline-block; padding: .1rem .5rem; border-radius: var(--radius); background: var(--surface-step); font-size: .9rem; font-weight: 600; white-space: nowrap; }
+.status-tag.PENDING_REVIEW, .status-tag.OPEN { background: #f3e3b8; color: #4d3a0c; }
+.status-tag.CLOSED { background: var(--ok-tint); color: var(--ok); }
+.status-tag.overdue, .sev-tag.HIGH { background: var(--danger-tint); color: var(--danger); }
+.sev-tag.MODERATE { background: #f3e3b8; color: #4d3a0c; }
+.case-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+.case-grid .panel + .panel { margin-top: 1.5rem; }
+@media (max-width: 860px) { .case-grid { grid-template-columns: 1fr; } }
+.report-text { white-space: normal; overflow-wrap: anywhere; font-size: 1.1rem; max-width: 70ch; }
+.pick-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
 
 /* Profile */
 .identity { display: flex; gap: 1.25rem; align-items: center; margin-bottom: 2rem; }
