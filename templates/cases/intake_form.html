@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Report a concern{% endblock %}
+{% block content %}
+<h1>Report to {{ school.name }}</h1>
+<p class="lede">Write in Bisaya, Tagalog or English. Only the adult you choose and the school head will read this.</p>
+{% include 'cases/_danger_notice.html' %}
+
+<section class="panel" style="max-width: 40rem">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form }}
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" type="submit" data-busy-label="Sending…">Send report</button>
+      <a class="btn btn-quiet" href="{% url 'cases:intake_school' %}">Change school</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

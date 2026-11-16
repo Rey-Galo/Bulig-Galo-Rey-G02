@@ -3,10 +3,13 @@ from functools import wraps
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone
 
+from cases.models import CaseRecord
+from cases.services import visible_cases
 from schools.models import School
 
 from .forms import ProfileForm, RegistrationForm
@@ -58,12 +61,46 @@ def dashboard(request: HttpRequest) -> HttpResponse:
 @role_required(AccountType.STAFF)
 def staff_dashboard(request: HttpRequest) -> HttpResponse:
     memberships = request.user.memberships.select_related('school')
-    return render(request, 'accounts/dashboard_staff.html', {'memberships': memberships})
+    Status = CaseRecord.Status
+    owned = CaseRecord.objects.filter(owner_membership__account=request.user, owner_membership__is_active=True)
+    counts = owned.aggregate(
+        to_review=Count('pk', filter=Q(status=Status.PENDING_REVIEW)),
+        to_acknowledge=Count('pk', filter=Q(status=Status.OPEN)),
+        working=Count('pk', filter=Q(status__in=[Status.ACKNOWLEDGED, Status.IN_PROGRESS, Status.REFERRED])),
+    )
+    context = {
+        'memberships': memberships,
+        'counts': counts,
+        'recent_cases': visible_cases(request.user).exclude(status=Status.CLOSED)[:5],
+    }
+    return render(request, 'accounts/dashboard_staff.html', context)
+
+
+def _case_count(status_q: Q) -> Count:
+    return Count('reports__case', filter=status_q)
 
 
 @role_required(AccountType.DIVISION_ADMIN)
 def division_dashboard(request: HttpRequest) -> HttpResponse:
-    return render(request, 'accounts/dashboard_division.html', {'division': request.user.division})
+    # BR-22: counts per school only. No report text, case ids or case numbers leave this query.
+    Status = CaseRecord.Status
+    schools = list(
+        School.objects.filter(division=request.user.division)
+        .annotate(
+            unreviewed=_case_count(Q(reports__case__status=Status.PENDING_REVIEW)),
+            unacknowledged=_case_count(Q(reports__case__status=Status.OPEN)),
+            overdue=_case_count(Q(reports__case__status=Status.OPEN, reports__case__ack_due_at__lt=timezone.now())),
+            active=_case_count(
+                Q(reports__case__status__in=[Status.ACKNOWLEDGED, Status.IN_PROGRESS, Status.REFERRED])
+            ),
+            closed=_case_count(Q(reports__case__status=Status.CLOSED)),
+        )
+        .values('name', 'school_code', 'unreviewed', 'unacknowledged', 'overdue', 'active', 'closed')
+    )
+    keys = ('unreviewed', 'unacknowledged', 'overdue', 'active', 'closed')
+    totals = {key: sum(school[key] for school in schools) for key in keys}
+    context = {'division': request.user.division, 'schools': schools, 'totals': totals}
+    return render(request, 'accounts/dashboard_division.html', context)
 
 
 @role_required(AccountType.PLATFORM_ADMIN)

@@ -26,6 +26,7 @@
             <li><a href="{% url 'admin:index' %}">Manage accounts</a></li>
           {% endif %}
           {% if user.account_type == 'STAFF' %}
+            <li><a href="{% url 'cases:case_list' %}"{% if 'case_' in current %} aria-current="page"{% endif %}>Cases</a></li>
             <li><a href="{% url 'schools:membership_list' %}"{% if 'membership' in current %} aria-current="page"{% endif %}>My schools</a></li>
           {% endif %}
           <li><a href="{% url 'accounts:profile' %}"{% if 'profile' in current %} aria-current="page"{% endif %}>Profile</a></li>

@@ -19,8 +19,10 @@
             <td><span class="role-tag {{ m.role }}">{{ m.get_role_display }}</span>{% if not m.is_active %} <span class="role-tag">Inactive</span>{% endif %}</td>
             <td>{{ m.is_trusted_recipient|yesno:"Yes,No" }}</td>
             <td class="text-end text-nowrap">
+              {% if m.is_active %}
               <a class="btn btn-quiet btn-sm" href="{% url 'schools:membership_edit' m.pk %}">Edit</a>
               <a class="btn btn-quiet btn-sm" href="{% url 'schools:membership_leave' m.pk %}">Leave</a>
+              {% endif %}
             </td>
           </tr>
         {% empty %}
