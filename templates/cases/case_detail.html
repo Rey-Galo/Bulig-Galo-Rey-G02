@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Case {{ case.case_number }}{% endblock %}
+{% block content %}
+<p class="mb-1"><a href="{% url 'cases:case_list' %}">← All cases</a></p>
+<h1>Case {{ case.case_number }}</h1>
+<p class="lede">
+  <span class="status-tag {{ case.status }}">{{ case.get_status_display }}</span>
+  {% if case.confirmed_severity %}<span class="sev-tag {{ case.confirmed_severity }}">{{ case.get_confirmed_severity_display }} severity</span>{% endif %}
+  {% if case.status == 'OPEN' and case.ack_due_at < now %}<span class="status-tag overdue">Acknowledgement overdue</span>{% endif %}
+</p>
+
+<div class="case-grid">
+  <div>
+    <section class="panel" aria-labelledby="report-title">
+      <h2 id="report-title">What the student wrote</h2>
+      <p class="text-body-secondary small mb-2">
+        {{ case.report.get_language_code_display }}{% if case.report.category %} · {{ case.report.get_category_display }}{% endif %} · sent {{ case.report.submitted_at|date:"M j, Y g:i A" }}
+      </p>
+      <div class="report-text">{{ case.report.original_text|linebreaksbr }}</div>
+    </section>
+
+    {% if can_act %}
+      {% if case.status == 'PENDING_REVIEW' %}
+      <section class="panel" aria-labelledby="review-title">
+        <h2 id="review-title">Review severity</h2>
+        <p class="text-body-secondary">This is the one final decision for this case. It starts the acknowledgement deadline.</p>
+        <form method="post" action="{% url 'cases:case_review' case.pk %}" novalidate>
+          {% csrf_token %}
+          {{ review_form }}
+          <button class="btn btn-primary" type="submit" data-busy-label="Saving…">Save review</button>
+        </form>
+      </section>
+      {% elif case.status == 'OPEN' %}
+      <section class="panel" aria-labelledby="ack-title">
+        <h2 id="ack-title">Acknowledge</h2>
+        <p>Acknowledging means you take responsibility for this case. Do it before {{ case.ack_due_at|date:"M j, g:i A" }}.</p>
+        <form method="post" action="{% url 'cases:case_acknowledge' case.pk %}">
+          {% csrf_token %}
+          <button class="btn btn-primary" type="submit" data-busy-label="Saving…">Acknowledge case</button>
+        </form>
+      </section>
+      {% elif case.status != 'CLOSED' %}
+      <section class="panel" aria-labelledby="status-title">
+        <h2 id="status-title">Update status</h2>
+        <form method="post" action="{% url 'cases:case_status' case.pk %}" novalidate>
+          {% csrf_token %}
+          {{ status_form }}
+          <button class="btn btn-primary" type="submit" data-busy-label="Saving…">Update case</button>
+        </form>
+      </section>
+      {% endif %}
+
+      {% if is_head and case.status != 'CLOSED' %}
+      <section class="panel" aria-labelledby="reassign-title">
+        <h2 id="reassign-title">Reassign</h2>
+        <form method="post" action="{% url 'cases:case_reassign' case.pk %}" novalidate>
+          {% csrf_token %}
+          {{ reassign_form }}
+          <button class="btn btn-quiet" type="submit" data-busy-label="Saving…">Reassign case</button>
+        </form>
+      </section>
+      {% endif %}
+    {% elif case.status != 'CLOSED' %}
+      <p class="empty-note mt-3">You can read this case because it was sent to you, but only the current owner or the school head can change it.</p>
+    {% endif %}
+  </div>
+
+  <aside class="panel" aria-labelledby="facts-title">
+    <h2 id="facts-title">Case facts</h2>
+    <dl class="facts">
+      <dt>School</dt><dd>{{ case.report.school.name }}</dd>
+      <dt>Sent to</dt><dd>{{ case.report.recipient_membership.account.display_name }}</dd>
+      <dt>Owner</dt><dd>{{ case.owner_membership.account.display_name }}</dd>
+      {% if case.review %}
+        <dt>Reviewed by</dt><dd>{{ case.review.reviewer_membership.account.display_name }}, {{ case.reviewed_at|date:"M j, g:i A" }}</dd>
+        <dt>Review reason</dt><dd>{{ case.review.reason }}</dd>
+        <dt>Acknowledge by</dt><dd>{{ case.ack_due_at|date:"M j, g:i A" }}</dd>
+      {% endif %}
+      {% if case.acknowledgement %}
+        <dt>Acknowledged by</dt><dd>{{ case.acknowledgement.actor_membership.account.display_name }}, {{ case.acknowledgement.acknowledged_at|date:"M j, g:i A" }}</dd>
+      {% endif %}
+      {% if case.referral_destination %}<dt>Referred to</dt><dd>{{ case.referral_destination }}</dd>{% endif %}
+      {% if case.closed_at %}
+        <dt>Closed</dt><dd>{{ case.closed_at|date:"M j, Y g:i A" }}</dd>
+        <dt>Resolution</dt><dd>{{ case.resolution_summary }}</dd>
+      {% endif %}
+    </dl>
+  </aside>
+</div>
+{% endblock %}

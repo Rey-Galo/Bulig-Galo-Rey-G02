@@ -5,14 +5,36 @@
 <p class="lede">Division code {{ division.division_code }}. You see how schools respond to reports. You never see report contents or case details.</p>
 
 <section aria-label="Division totals" class="tally">
-  {% include 'accounts/_stat.html' with label='Unreviewed' value=0 %}
-  {% include 'accounts/_stat.html' with label='Overdue' value=0 %}
-  {% include 'accounts/_stat.html' with label='Escalated' value=0 %}
-  {% include 'accounts/_stat.html' with label='Closed' value=0 %}
+  {% include 'accounts/_stat.html' with label='Unreviewed' value=totals.unreviewed %}
+  {% include 'accounts/_stat.html' with label='Not yet acknowledged' value=totals.unacknowledged %}
+  {% include 'accounts/_stat.html' with label='Overdue' value=totals.overdue %}
+  {% include 'accounts/_stat.html' with label='Closed' value=totals.closed %}
 </section>
 
 <section class="panel" aria-labelledby="schools-title">
   <h2 id="schools-title">How each school is responding</h2>
-  <p class="empty-note">No schools in this division yet. Once a platform administrator links a school to {{ division.name }}, it shows up here with its unreviewed, overdue, escalated and closed counts.</p>
+  {% if schools %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr><th scope="col">School</th><th scope="col">Unreviewed</th><th scope="col">Not acknowledged</th><th scope="col">Overdue</th><th scope="col">Being handled</th><th scope="col">Closed</th></tr>
+      </thead>
+      <tbody>
+        {% for s in schools %}
+          <tr>
+            <td>{{ s.name }} <span class="text-body-secondary">({{ s.school_code }})</span></td>
+            <td>{{ s.unreviewed }}</td>
+            <td>{{ s.unacknowledged }}</td>
+            <td>{% if s.overdue %}<span class="status-tag overdue">{{ s.overdue }}</span>{% else %}0{% endif %}</td>
+            <td>{{ s.active }}</td>
+            <td>{{ s.closed }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty-note">No schools in this division yet. Once a platform administrator links a school to {{ division.name }}, it shows up here with its counts.</p>
+  {% endif %}
 </section>
 {% endblock %}

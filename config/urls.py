@@ -27,4 +27,5 @@ urlpatterns = [
     path('', RedirectView.as_view(pattern_name='accounts:dashboard'), name='home'),
     path('', include('accounts.urls')),
     path('schools/', include('schools.urls')),
+    path('', include('cases.urls')),
 ]
