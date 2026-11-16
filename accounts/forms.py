@@ -12,7 +12,13 @@ class BootstrapMixin:
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
+            if isinstance(field.widget, forms.CheckboxInput):
+                css = 'form-check-input'
+            elif isinstance(field.widget, (forms.Select, forms.RadioSelect)):
+                css = 'form-select'
+            else:
+                css = 'form-control'
+            field.widget.attrs['class'] = css
 
     def full_clean(self) -> None:
         super().full_clean()

@@ -7,6 +7,8 @@ from django.db.models import Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
+from schools.models import School
+
 from .forms import ProfileForm, RegistrationForm
 from .models import Division, StaffAccount
 
@@ -55,7 +57,8 @@ def dashboard(request: HttpRequest) -> HttpResponse:
 
 @role_required(AccountType.STAFF)
 def staff_dashboard(request: HttpRequest) -> HttpResponse:
-    return render(request, 'accounts/dashboard_staff.html')
+    memberships = request.user.memberships.select_related('school')
+    return render(request, 'accounts/dashboard_staff.html', {'memberships': memberships})
 
 
 @role_required(AccountType.DIVISION_ADMIN)
@@ -71,6 +74,7 @@ def platform_dashboard(request: HttpRequest) -> HttpResponse:
     context = {
         'account_counts': [(label, counts.get(value, 0)) for value, label in AccountType.choices],
         'division_count': Division.objects.count(),
+        'school_count': School.objects.count(),
         'recent_accounts': StaffAccount.objects.order_by('-created_at')[:5],
     }
     return render(request, 'accounts/dashboard_platform.html', context)

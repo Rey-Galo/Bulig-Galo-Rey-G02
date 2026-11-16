@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Leave school{% endblock %}
+{% block content %}
+<h1>Leave {{ membership.school.name }}?</h1>
+<p class="lede">Students will no longer be able to pick you for this school. You can join again later.</p>
+<form method="post" class="d-flex gap-2">
+  {% csrf_token %}
+  <button class="btn btn-danger" type="submit" data-busy-label="Leaving…">Leave school</button>
+  <a class="btn btn-quiet" href="{% url 'schools:membership_list' %}">Cancel</a>
+</form>
+{% endblock %}
