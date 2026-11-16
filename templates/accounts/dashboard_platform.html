@@ -9,6 +9,7 @@
     {% include 'accounts/_stat.html' with label=label|add:' accounts' value=count %}
   {% endfor %}
   {% include 'accounts/_stat.html' with label='Divisions' value=division_count %}
+  {% include 'accounts/_stat.html' with label='Schools' value=school_count %}
 </section>
 
 <section class="panel" aria-labelledby="newest-title">

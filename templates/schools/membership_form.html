@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<p class="lede">School head roles are assigned by a platform administrator.</p>
+<section class="panel" style="max-width: 32rem">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form }}
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" type="submit" data-busy-label="Saving…">Save</button>
+      <a class="btn btn-quiet" href="{% url 'schools:membership_list' %}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
