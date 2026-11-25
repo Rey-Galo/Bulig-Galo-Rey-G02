@@ -98,7 +98,11 @@ DATABASES = {
         'PASSWORD': os.environ['DB_PASSWORD'],
         'HOST': os.environ['DB_HOST'],
         'PORT': os.environ['DB_PORT'],
-        'OPTIONS': {'sslmode': 'require'},
+        'OPTIONS': {'sslmode': 'require', 'connect_timeout': 10},
+        # ISS-02: the Supabase pooler drops idle connections. Reuse a connection for 60s,
+        # but check it is alive first and reconnect if the pooler closed it.
+        'CONN_MAX_AGE': 60,
+        'CONN_HEALTH_CHECKS': True,
     }
 }
 
