@@ -1,0 +1,21 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Something went wrong · Bulig</title>
+  <link rel="stylesheet" href="{% static 'css/bulig.css' %}">
+  <style>
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: system-ui, sans-serif; line-height: 1.55; }
+    .oops { max-width: 36rem; margin: 0 auto; padding: 4rem 1rem; }
+    .oops a { display: inline-block; padding: .5rem 1rem; background: var(--chalk); color: var(--chalk-ink); border-radius: var(--radius); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main class="oops">
+    <h1>Something went wrong</h1>
+    <p>Sorry, Bulig hit a problem on our side. Nothing you did caused it. Please try again in a moment.</p>
+    <a href="/">Back to Bulig</a>
+  </main>
+</body>
+</html>
