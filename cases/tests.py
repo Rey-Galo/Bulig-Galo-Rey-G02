@@ -1,7 +1,8 @@
 import uuid
 from datetime import timedelta
 
-from django.test import TestCase
+from django.template.loader import render_to_string
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from accounts.models import StaffAccount
@@ -194,3 +195,46 @@ class LeaveSchoolTests(CaseTestBase):
         self.teacher.refresh_from_db()
         self.assertTrue(self.teacher.is_active)
         self.assertEqual(self.teacher.role, Role.GUIDANCE)
+
+
+class ErrorHandlingTests(CaseTestBase):
+    def test_unknown_case_id_renders_custom_404_page(self):
+        self.client.force_login(self.teacher.account)
+        with override_settings(DEBUG=False):
+            response = self.client.get(reverse('cases:case_detail', args=[uuid.uuid4()]))
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, '404.html')
+
+    def test_malformed_case_id_is_404_not_a_crash(self):
+        self.client.force_login(self.teacher.account)
+        self.assertEqual(self.client.get('/cases/not-a-uuid/').status_code, 404)
+
+    def test_case_actions_reject_get_with_405(self):
+        case = self.make_case()
+        self.client.force_login(self.teacher.account)
+        for name in ('review', 'acknowledge', 'status', 'reassign'):
+            with self.subTest(action=name):
+                self.assertEqual(self.client.get(reverse(f'cases:case_{name}', args=[case.pk])).status_code, 405)
+
+    def test_post_without_csrf_token_is_rejected_and_case_unchanged(self):
+        case = self.make_case()
+        strict = Client(enforce_csrf_checks=True)
+        strict.force_login(self.teacher.account)
+        response = strict.post(reverse('cases:case_review', args=[case.pk]), {'severity': 'HIGH', 'reason': 'x'})
+        self.assertEqual(response.status_code, 403)
+        case.refresh_from_db()
+        self.assertEqual(case.status, Status.PENDING_REVIEW)
+
+    def test_500_page_renders_standalone_with_no_context(self):
+        self.assertIn('Something went wrong', render_to_string('500.html'))
+
+    def test_unlinked_colleague_cannot_review_or_change_status(self):
+        case = self.make_case()
+        self.client.force_login(self.colleague.account)
+        for name, data in (('review', {'severity': 'HIGH', 'reason': 'x'}), ('status', {'status': 'IN_PROGRESS'})):
+            with self.subTest(action=name):
+                response = self.client.post(reverse(f'cases:case_{name}', args=[case.pk]), data)
+                self.assertEqual(response.status_code, 404)
+        case.refresh_from_db()
+        self.assertEqual(case.status, Status.PENDING_REVIEW)
+        self.assertIsNone(case.confirmed_severity)
