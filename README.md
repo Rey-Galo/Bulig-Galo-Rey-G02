@@ -71,6 +71,7 @@ DB_USER=postgres.<project-ref>
 DB_PASSWORD=<your-db-password>
 DB_HOST=<region>.pooler.supabase.com
 DB_PORT=5432
+ALLOWED_HOSTS=localhost,127.0.0.1
 ```
 
 Then run:
@@ -100,11 +101,25 @@ All of them use the password you passed to `--password`.
 
 ## Tests
 
-The Supabase pooler keeps sessions open, so always pass `--keepdb`:
+The tests run against a real PostgreSQL database (Django creates and drops `test_postgres`).
+The Supabase pooler keeps sessions open on that database, so `config.test_runner.PoolerSafeRunner`
+(set as `TEST_RUNNER`) disconnects them before dropping it. That lets a plain run work every time:
 
 ```powershell
-python manage.py test accounts schools cases --keepdb
+python manage.py test                    # everything, test database is dropped at the end
+python manage.py test --keepdb           # faster reruns, reuses the test database
+python manage.py test cases              # one app
+python manage.py test cases.tests.ErrorHandlingTests                       # one class
+python manage.py test cases.tests.WorkflowTests.test_review_requires_reason  # one test
 ```
+
+What the suites cover:
+
+- `accounts`: registration, login and logout, role-based access to dashboards, profile.
+- `schools`: joining, editing and leaving a school, and the demo seed command.
+- `cases`: anonymous intake, the review to close workflow, who can see or change a case,
+  dashboard counts, leaving a school with open cases, and error handling (404 and 405 responses,
+  CSRF rejection, the 500 page).
 
 ## Project layout
 

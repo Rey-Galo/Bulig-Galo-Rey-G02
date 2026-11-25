@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Page not found{% endblock %}
+{% block content %}
+<div class="denied">
+  <h1>Page not found</h1>
+  <p class="lede">We could not find that page. The link may be wrong, or it may lead to something you cannot open.</p>
+  <a class="btn btn-primary" href="{% url 'accounts:dashboard' %}">Go to my dashboard</a>
+</div>
+{% endblock %}

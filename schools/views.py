@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.db import transaction
 from django.db.models import RestrictedError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -52,19 +53,26 @@ def membership_edit(request: HttpRequest, pk) -> HttpResponse:
 @role_required(STAFF)
 def membership_leave(request: HttpRequest, pk) -> HttpResponse:
     membership = _own_membership(request, pk)
-    # BR-26: hand over open cases first.
-    open_cases = membership.owned_cases.exclude(status='CLOSED').count()
     if request.method == 'POST':
-        if open_cases:
-            messages.error(request, f'You still own {open_cases} open case(s). Ask your school head to reassign them first.')
-            return redirect('schools:membership_list')
-        try:
-            membership.delete()
-        except RestrictedError:
-            # BR-28: case history points at this membership, so keep the row and switch it off instead.
-            membership.is_active = False
-            membership.is_trusted_recipient = False
-            membership.save(update_fields=['is_active', 'is_trusted_recipient'])
+        with transaction.atomic():
+            # Lock the row so the open-case check and the delete/deactivate happen together.
+            membership = get_object_or_404(
+                SchoolMembership.objects.select_for_update(of=('self',)).select_related('school'), pk=pk, account=request.user
+            )
+            # BR-26: hand over open cases first.
+            open_cases = membership.owned_cases.exclude(status='CLOSED').count()
+            if open_cases:
+                messages.error(request, f'You still own {open_cases} open case(s). Ask your school head to reassign them first.')
+                return redirect('schools:membership_list')
+            try:
+                with transaction.atomic():  # savepoint, so a RestrictedError does not poison the outer transaction
+                    membership.delete()
+            except RestrictedError:
+                # BR-28: case history points at this membership, so keep the row and switch it off instead.
+                membership.is_active = False
+                membership.is_trusted_recipient = False
+                membership.save(update_fields=['is_active', 'is_trusted_recipient'])
         messages.success(request, f'You left {membership.school.name}.')
         return redirect('schools:membership_list')
+    open_cases = membership.owned_cases.exclude(status='CLOSED').count()
     return render(request, 'schools/membership_leave.html', {'membership': membership, 'open_cases': open_cases})
